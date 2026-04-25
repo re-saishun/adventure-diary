@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toram Online Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans transition-colors duration-300">
+    <header class="bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Toram Online Database</h1>
+            <button id="theme-toggle" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                Toggle Dark Mode
+            </button>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <div class="text-center">
+            <h2 class="text-4xl font-bold mb-2">Welcome to the Toram Online Database</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400">Select a category to get started:</p>
+        </div>
+        <nav class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/items/" class="block text-center bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                <h3 class="text-2xl font-bold text-blue-500 dark:text-blue-400">Items</h3>
+            </a>
+            <a href="/monsters/" class="block text-center bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                <h3 class="text-2xl font-bold text-green-500 dark:text-green-400">Monsters</h3>
+            </a>
+            <a href="/skills/" class="block text-center bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                <h3 class="text-2xl font-bold text-red-500 dark:text-red-400">Skills</h3>
+            </a>
+        </nav>
+    </main>
+    <script src="/js/script.js"></script>
+</body>
+</html>

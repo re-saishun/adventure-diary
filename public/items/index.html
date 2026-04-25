@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items - Toram Online Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans transition-colors duration-300">
+    <header class="bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white"><a href="/">Toram Online Database</a></h1>
+            <button id="theme-toggle" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                Toggle Dark Mode
+            </button>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-4xl font-bold mb-4 text-center">Items</h2>
+        <div id="data-container" class="overflow-x-auto shadow-md sm:rounded-lg">
+            <!-- Data from your spreadsheet will be displayed here -->
+        </div>
+    </main>
+    <script src="/js/script.js"></script>
+    <script>
+        const googleSheetUrl = 'YOUR_GOOGLE_SHEET_URL';
+        fetchGoogleSheetData(googleSheetUrl).then(data => {
+            displayData(data);
+        });
+    </script>
+</body>
+</html>
