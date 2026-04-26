@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div id="item-list"></div>
+        <div id="item-list" class="accordion-group"></div>
     </main>
     <script>
         function toggleSidebar() {
@@ -51,12 +51,49 @@
                 const response = await fetch('../database/items.json');
                 const items = await response.json();
                 const itemList = document.getElementById('item-list');
-                let html = '<table><thead><tr><th>Name</th><th>Type</th></tr></thead><tbody>';
+                let html = '';
                 for (const item of items) {
-                    html += `<tr><td>${item.name}</td><td>${item.type}</td></tr>`;
+                    html += `
+                        <details class="acc-item">
+                            <summary>
+                                <span>${item.name}</span>
+                                <span class="acc-icon">▼</span>
+                            </summary>
+                            <div class="content-wrapper">
+                                <div class="content-body">
+                                    Type: ${item.type}
+                                </div>
+                            </div>
+                        </details>
+                    `;
                 }
-                html += '</tbody></table>';
                 itemList.innerHTML = html;
+
+                const autoClose = true;
+                document.querySelectorAll('.acc-item').forEach(el => {
+                    const summary = el.querySelector('summary');
+                    const wrapper = el.querySelector('.content-wrapper');
+                    summary.onclick = (e) => {
+                        e.preventDefault();
+                        if (el.open) {
+                            el.classList.remove('is-open');
+                            wrapper.style.height = '0px';
+                            setTimeout(() => el.open = false, 310);
+                        } else {
+                            if (autoClose) {
+                                document.querySelectorAll('.acc-item.is-open').forEach(o => {
+                                    o.classList.remove('is-open');
+                                    o.querySelector('.content-wrapper').style.height = '0px';
+                                    setTimeout(() => o.open = false, 310);
+                                });
+                            }
+                            el.open = true;
+                            el.classList.add('is-open');
+                            wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
+                        }
+                    };
+                });
+
             } catch (error) {
                 console.error('Error loading items:', error);
                 document.getElementById('item-list').innerHTML = '<p>Could not load items.</p>';

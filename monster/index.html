@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div id="monster-list"></div>
+        <div id="monster-list" class="accordion-group"></div>
     </main>
     <script>
         function toggleSidebar() {
@@ -51,12 +51,49 @@
                 const response = await fetch('../database/monsters.json');
                 const monsters = await response.json();
                 const monsterList = document.getElementById('monster-list');
-                let html = '<table><thead><tr><th>Name</th><th>Element</th></tr></thead><tbody>';
+                let html = '';
                 for (const monster of monsters) {
-                    html += `<tr><td>${monster.name}</td><td>${monster.element}</td></tr>`;
+                    html += `
+                        <details class="acc-item">
+                            <summary>
+                                <span>${monster.name}</span>
+                                <span class="acc-icon">▼</span>
+                            </summary>
+                            <div class="content-wrapper">
+                                <div class="content-body">
+                                    Element: ${monster.element}
+                                </div>
+                            </div>
+                        </details>
+                    `;
                 }
-                html += '</tbody></table>';
                 monsterList.innerHTML = html;
+
+                const autoClose = true;
+                document.querySelectorAll('.acc-item').forEach(el => {
+                    const summary = el.querySelector('summary');
+                    const wrapper = el.querySelector('.content-wrapper');
+                    summary.onclick = (e) => {
+                        e.preventDefault();
+                        if (el.open) {
+                            el.classList.remove('is-open');
+                            wrapper.style.height = '0px';
+                            setTimeout(() => el.open = false, 310);
+                        } else {
+                            if (autoClose) {
+                                document.querySelectorAll('.acc-item.is-open').forEach(o => {
+                                    o.classList.remove('is-open');
+                                    o.querySelector('.content-wrapper').style.height = '0px';
+                                    setTimeout(() => o.open = false, 310);
+                                });
+                            }
+                            el.open = true;
+                            el.classList.add('is-open');
+                            wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
+                        }
+                    };
+                });
+
             } catch (error) {
                 console.error('Error loading monsters:', error);
                 document.getElementById('monster-list').innerHTML = '<p>Could not load monsters.</p>';
