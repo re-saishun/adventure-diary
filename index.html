@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Diary - Toram Online Database</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --sidebar-bg: #f4f4f4;
+            --accent-color: #333333;
+            --border-color: #dddddd;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0a0a0a;
+            --text-color: #ffffff;
+            --sidebar-bg: #141414;
+            --accent-color: #ffffff;
+            --border-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            transition: all 0.3s ease;
+        }
+
+        /* Sidebar Style */
+        nav {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 250px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 8px 16px;
+            background: var(--text-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 10px; }
+        .hero p { opacity: 0.8; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            nav { width: 70px; padding: 10px; }
+            nav a span { display: none; }
+            main { margin-left: 70px; }
+            .logo { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">ADVENTURE DIARY</div>
+        <a href="/"><span>🏠 Home</span></a>
+        <a href="/item/"><span>⚔️ Items</span></a>
+        <a href="/monster/"><span>👾 Monsters</span></a>
+        <a href="/skill/"><span>🔮 Skills</span></a>
+    </nav>
+
+    <main>
+        <div class="header-section">
+            <h2>Dashboard</h2>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Dark Mode</button>
+        </div>
+
+        <section class="hero">
+            <h1>Toram Online Database</h1>
+            <p>Penyimpanan data petualangan pribadi dan informasi game terlengkap.</p>
+        </section>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Items</h3>
+                <p id="count-item">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Monsters</h3>
+                <p id="count-monster">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <h3>Skills</h3>
+                <p id="count-skill">Loading...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Fitur Dark Mode
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeBtn').innerText = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').innerText = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+        // Contoh cara mengambil data dari folder /database/
+        async function loadStats() {
+            try {
+                // Kamu harus membuat file items.json, monsters.json, dll di folder /database/
+                const itemRes = await fetch('/database/items.json');
+                const items = await itemRes.json();
+                document.getElementById('count-item').innerText = items.length + " Total Items";
+                
+                // Tambahkan fetch lain untuk monster dan skill sesuai kebutuhan
+            } catch (err) {
+                document.getElementById('count-item').innerText = "Data not found";
+            }
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>
