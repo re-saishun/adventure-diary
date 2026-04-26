@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items - Adventure Diary</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <nav id="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+        <div class="logo">ADVENTURE DIARY</div>
+        <a href="/"><span>🏠 Home</span></a>
+        <a href="/item/"><span>⚔️ Items</span></a>
+        <a href="/monster/"><span>👾 Monsters</span></a>
+        <a href="/skill/"><span>🔮 Skills</span></a>
+    </nav>
+    <main>
+        <div class="header-section">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <h2>Items</h2>
+            <div class="theme-switcher" onclick="toggleTheme()">
+                <div class="switcher-ball">
+                    <span class="icon-day">☀️</span>
+                    <span class="icon-night">🌙</span>
+                </div>
+            </div>
+        </div>
+        <div id="item-list"></div>
+    </main>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        async function loadItems() {
+            try {
+                const response = await fetch('../database/items.json');
+                const items = await response.json();
+                const itemList = document.getElementById('item-list');
+                let html = '<table><thead><tr><th>Name</th><th>Type</th></tr></thead><tbody>';
+                for (const item of items) {
+                    html += `<tr><td>${item.name}</td><td>${item.type}</td></tr>`;
+                }
+                html += '</tbody></table>';
+                itemList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading items:', error);
+                document.getElementById('item-list').innerHTML = '<p>Could not load items.</p>';
+            }
+        }
+        loadItems();
+    </script>
+</body>
+</html>
