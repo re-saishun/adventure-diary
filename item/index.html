@@ -21,9 +21,6 @@
             <a href="../monster/"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
             <a href="../skill/"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
         </div>
-        <div class="nav-links-footer">
-            <a href="../kontribusi/"><span>Kontribusi</span></a>
-        </div>
     </nav>
     <main>
         <div class="header-section">
@@ -40,13 +37,17 @@
     </main>
     <script>
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            const nav = document.getElementById('sidebar');
+            const main = document.querySelector('main');
+            nav.classList.toggle('active');
+            main.classList.toggle('active');
         }
 
         function toggleTheme() {
             const body = document.documentElement;
             const currentTheme = body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }
@@ -54,110 +55,129 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        let allItems = [];
-
         async function loadItems() {
             try {
                 const response = await fetch('../database/items.json');
-                allItems = await response.json();
-                displayItems(allItems);
-                setupAccordionAndPermalinks();
+                const items = await response.json();
+                const itemList = document.getElementById('item-list');
+                let html = '';
+
+                const iconMap = {
+                    "One-Handed Sword": "1h_ico.png",
+                    "Two-Handed Sword": "2h_ico.png",
+                    "Bow": "bow_ico.png",
+                    "Bowgun": "bwg_ico.png",
+                    "Staff": "stf_ico.png",
+                    "Magic Device": "md_ico.png",
+                    "Knuckle": "knu_ico.png",
+                    "Halberd": "hb_ico.png",
+                    "Katana": "ktn_ico.png",
+                    "Body Armor": "armor_ico.png",
+                    "Additional Gear": "add_ico.png",
+                    "Special Gear": "special_ico.png",
+                    "Shield": "shield_ico.png",
+                    "Dagger": "dagger_ico.png",
+                    "Arrow": "arrow_ico.png",
+                    "Ninjutsu Scroll": "scroll_ico.png",
+                    "Crysta Normal Base": "crysta_normal_base.png",
+                    "Crysta Normal Up": "crysta_normal_up.png",
+                    "Crysta Normal Max": "crysta_normal_max.png",
+                    "Crysta Weapon Base": "crysta_weapon_base.png",
+                    "Crysta Weapon Up": "crysta_weapon_up.png",
+                    "Crysta Weapon Max": "crysta_weapon_max.png",
+                    "Crysta Armor Base": "crysta_armor_base.png",
+                    "Crysta Armor Up": "crysta_armor_up.png",
+                    "Crysta Armor Max": "crysta_armor_max.png",
+                    "Crysta Additional Base": "crysta_add_base.png",
+                    "Crysta Additional Up": "crysta_add_up.png",
+                    "Crysta Additional Max": "crysta_add_max.png",
+                    "Crysta Special Base": "crysta_special_base.png",
+                    "Crysta Special Up": "crysta_special_up.png",
+                    "Crysta Special Max": "crysta_special_max.png",
+                    "Material Metal": "metal_ico.png",
+                    "Material Cloth": "cloth_ico.png",
+                    "Material Beast": "beast_ico.png",
+                    "Material Mana": "mana_ico.png",
+                    "Material Medicine": "medicine_ico.png",
+                    "Material Ore": "ore_ico.png"
+                };
+
+                for (const item of items) {
+                    const itemType = item.type.includes('-') ? item.type.split('-')[1] : item.type;
+                    const iconFilename = iconMap[itemType] || 'default_ico.png';
+                    const iconPath = `../img/icons/${iconFilename}`;
+                    const statType = item.type === 'Body Armor' || item.type === 'Additional Gear' || item.type === 'Special Gear' ? 'DEF' : 'ATK';
+
+                    let contentHtml = `<b>Type:</b> ${item.type}<br>`;
+
+                    if (item.item_stats && item.item_stats.length > 0) {
+                        contentHtml += '<b>Stats:</b><ul>';
+                        for (const stat of item.item_stats) {
+                            contentHtml += `<li>${stat}</li>`;
+                        }
+                        contentHtml += '</ul>';
+                    }
+
+                    if (item.source) {
+                        contentHtml += `<b>Source:</b> ${item.source.type}<br>`;
+                        if (item.source.mobs && item.source.mobs.length > 0) {
+                            contentHtml += '<ul>';
+                            for (const mob of item.source.mobs) {
+                                contentHtml += `<li><a href="../monster#${mob.replace(/ /g, '-')}">${mob}</a></li>`;
+                            }
+                            contentHtml += '</ul>';
+                        }
+                    }
+
+                    html += `
+                        <details class="acc-item">
+                            <summary>
+                                <span class="item-header-main">${item.name}</span>
+                                <div class="item-header-stats">
+                                    <span>${item.basic_stat} ${statType} ${item.secondary_stat ? `(${item.secondary_stat})` : ''}</span>
+                                </div>
+                                <img src="${iconPath}" class="item-type-icon">
+                            </summary>
+                            <div class="content-wrapper">
+                                <div class="content-body">
+                                    ${contentHtml}
+                                </div>
+                            </div>
+                        </details>
+                    `;
+                }
+                itemList.innerHTML = html;
+
+                const autoClose = true;
+                document.querySelectorAll('.acc-item').forEach(el => {
+                    const summary = el.querySelector('summary');
+                    const wrapper = el.querySelector('.content-wrapper');
+                    summary.onclick = (e) => {
+                        e.preventDefault();
+                        if (el.open) {
+                            el.classList.remove('is-open');
+                            wrapper.style.height = '0px';
+                            setTimeout(() => el.open = false, 310);
+                        } else {
+                            if (autoClose) {
+                                document.querySelectorAll('.acc-item.is-open').forEach(o => {
+                                    o.classList.remove('is-open');
+                                    o.querySelector('.content-wrapper').style.height = '0px';
+                                    setTimeout(() => o.open = false, 310);
+                                });
+                            }
+                            el.open = true;
+                            el.classList.add('is-open');
+                            wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
+                        }
+                    };
+                });
+
             } catch (error) {
                 console.error('Error loading items:', error);
                 document.getElementById('item-list').innerHTML = '<p>Could not load items.</p>';
             }
         }
-
-        function displayItems(items) {
-            const itemList = document.getElementById('item-list');
-            let html = '';
-            const iconMap = {
-                // ... (icon map remains the same)
-            };
-
-            for (const item of items) {
-                const itemId = item.name.replace(/ /g, '-');
-                const iconFilename = iconMap[item.type] || 'default_ico.png';
-                const iconPath = `../img/icons/${iconFilename}`;
-                const statType = ('DEF');
-
-                let contentHtml = `<b>Type:</b> ${item.type}<br>`;
-                if (item.stats) {
-                    contentHtml += '<b>Stats:</b><ul>' + item.stats.map(s => `<li>${s}</li>`).join('') + '</ul>';
-                }
-                if (item.obtains) {
-                    contentHtml += '<b>Obtained from:</b><ul>' + item.obtains.map(o => {
-                        // Check if it's a monster and link it
-                        return `<li><a href="../monster/#${o.replace(/ /g, '-')}">${o}</a></li>`;
-                    }).join('') + '</ul>';
-                }
-                if (item.notes) {
-                    contentHtml += `<br><p><i>${item.notes}</i></p>`;
-                }
-
-                const creditTag = item.credit ? `<div class="credit-tag">${item.credit}</div>` : '';
-
-                html += `
-                    <details class="acc-item" id="${itemId}">
-                        <summary>
-                            <span class="item-header-main"><a href="#${itemId}">${item.name}</a></span>
-                            <div class="item-header-stats">
-                                <span>${item.base_atk || item.base_def || ''} ${item.base_atk ? 'ATK' : 'DEF'}</span>
-                            </div>
-                            <img src="${iconPath}" class="item-type-icon">
-                        </summary>
-                        <div class="content-wrapper">
-                            <div class="content-body">
-                                ${contentHtml}
-                            </div>
-                        </div>
-                        ${creditTag}
-                    </details>
-                `;
-            }
-            itemList.innerHTML = html;
-        }
-
-        function setupAccordionAndPermalinks() {
-            const autoClose = true;
-            document.querySelectorAll('.acc-item').forEach(el => {
-                const summary = el.querySelector('summary');
-                const wrapper = el.querySelector('.content-wrapper');
-                summary.addEventListener('click', (e) => {
-                    if (e.target.tagName === 'A') return; // Don't toggle if clicking the permalink
-                    e.preventDefault();
-                    if (el.open) {
-                        el.classList.remove('is-open');
-                        wrapper.style.height = '0px';
-                        setTimeout(() => el.open = false, 310);
-                    } else {
-                        if (autoClose) {
-                            document.querySelectorAll('.acc-item.is-open').forEach(o => {
-                                o.classList.remove('is-open');
-                                o.querySelector('.content-wrapper').style.height = '0px';
-                                setTimeout(() => o.open = false, 310);
-                            });
-                        }
-                        el.open = true;
-                        el.classList.add('is-open');
-                        wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
-                    }
-                });
-            });
-
-            // Permalink handling
-            if (window.location.hash) {
-                const itemId = window.location.hash.substring(1);
-                const itemElement = document.getElementById(itemId);
-                if (itemElement) {
-                    setTimeout(() => {
-                        itemElement.querySelector('summary').click();
-                        itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                }
-            }
-        }
-
         loadItems();
     </script>
 </body>
