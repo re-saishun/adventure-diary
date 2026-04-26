@@ -194,61 +194,84 @@ nav.active + main {
 
 /* Accordion Styles */
 .accordion-group { 
-  width: 100%; 
-  max-width: 611px; 
-  box-sizing: 
-  border-box; 
-  font-size: 15px; 
-}
-.acc-item { 
-  background: var(--bg-color); 
-  border: 1px solid var(--border-color); 
-  overflow: hidden; 
-  box-shadow: 0 2px calc(2px * 2) rgba(0, 0, 0, 0.15); 
-  transition: all 0.3s ease; 
+    width: 100%; 
+    max-width: 800px; 
+    box-sizing: border-box; 
+    font-size: 15px; 
 }
 
 .acc-item { 
-  border-radius: 6px; 
-  margin-bottom: 0px; 
+    background: var(--bg-color); 
+    border: 1px solid var(--border-color); 
+    overflow: hidden; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    border-radius: 8px; 
+    margin-bottom: 15px; 
 }
-.acc-item:last-child { 
-  margin-bottom: 0; 
+
+summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    color: var(--text-color);
+    transition: background 0.2s ease;
 }
-summary { 
-  padding: 16px; 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  cursor: pointer; 
-  list-style: none; 
-  font-weight: 600; 
-  color: var(--text-color); 
-  transition: background 0.2s ease; 
+
+summary:hover {
+    background: var(--sidebar-bg);
 }
-summary:hover { 
-  background: var(--sidebar-bg); 
+
+summary::-webkit-details-marker {
+    display: none;
 }
-summary::-webkit-details-marker { 
-  display: none; 
+
+.item-header-main {
+    font-weight: bold;
 }
-.acc-icon { 
-  color: var(--accent-color); 
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+
+.item-header-stats {
+    font-size: 0.9em;
+    color: var(--text-color-secondary);
 }
-.content-wrapper { 
-  height: 0; 
-  overflow: hidden; 
-  transition: height 0.3s ease; 
-  background: var(--sidebar-bg); 
+
+.item-type-icon {
+    width: 24px;
+    height: 24px;
 }
-.content-body { 
-  padding: 19px; 
-  color: var(--text-color); 
-  line-height: 1.6; 
+
+.content-wrapper {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease-out;
+    background: var(--sidebar-bg);
 }
-.acc-item.is-open .acc-icon { 
-  transform: rotate(180deg); 
+
+.content-body {
+    padding: 20px;
+    color: var(--text-color);
+    line-height: 1.7;
+}
+
+.content-body b {
+    font-weight: bold;
+}
+
+.content-body ul {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.content-body ul li {
+    margin-bottom: 5px;
+}
+
+.acc-item.is-open .content-wrapper {
+    /* height is set by JS */
 }
 
 @media (max-width: 768px) {

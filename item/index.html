@@ -52,36 +52,81 @@
                 const items = await response.json();
                 const itemList = document.getElementById('item-list');
                 let html = '';
+
+                const iconMap = {
+                    "One-Handed Sword": "1h_ico.png",
+                    "Two-Handed Sword": "2h_ico.png",
+                    "Bow": "bow_ico.png",
+                    "Bowgun": "bwg_ico.png",
+                    "Staff": "stf_ico.png",
+                    "Magic Device": "md_ico.png",
+                    "Knuckle": "knu_ico.png",
+                    "Halberd": "hb_ico.png",
+                    "Katana": "ktn_ico.png",
+                    "Body Armor": "armor_ico.png",
+                    "Additional Gear": "add_ico.png",
+                    "Special Gear": "special_ico.png",
+                    "Shield": "shield_ico.png",
+                    "Dagger": "dagger_ico.png",
+                    "Arrow": "arrow_ico.png",
+                    "Ninjutsu Scroll": "scroll_ico.png",
+                    "Crysta Normal Base": "crysta_normal_base.png",
+                    "Crysta Normal Up": "crysta_normal_up.png",
+                    "Crysta Normal Max": "crysta_normal_max.png",
+                    "Crysta Weapon Base": "crysta_weapon_base.png",
+                    "Crysta Weapon Up": "crysta_weapon_up.png",
+                    "Crysta Weapon Max": "crysta_weapon_max.png",
+                    "Crysta Armor Base": "crysta_armor_base.png",
+                    "Crysta Armor Up": "crysta_armor_up.png",
+                    "Crysta Armor Max": "crysta_armor_max.png",
+                    "Crysta Additional Base": "crysta_add_base.png",
+                    "Crysta Additional Up": "crysta_add_up.png",
+                    "Crysta Additional Max": "crysta_add_max.png",
+                    "Crysta Special Base": "crysta_special_base.png",
+                    "Crysta Special Up": "crysta_special_up.png",
+                    "Crysta Special Max": "crysta_special_max.png",
+                    "Material Metal": "metal_ico.png",
+                    "Material Cloth": "cloth_ico.png",
+                    "Material Beast": "beast_ico.png",
+                    "Material Mana": "mana_ico.png",
+                    "Material Medicine": "medicine_ico.png",
+                    "Material Ore": "ore_ico.png"
+                };
+
                 for (const item of items) {
-                    let contentHtml = `Type: ${item.type}<br>`
-                    contentHtml += `ATK: ${item.basic_stat}<br>`
-                    if(item.secondary_stat){
-                      contentHtml += `Stability: ${item.secondary_stat}<br>`
-                    }
-                    if(item.item_stats && item.item_stats.length > 0) {
-                        contentHtml += 'Stats:<br><ul>';
+                    const itemType = item.type.split('-')[1];
+                    const iconFilename = iconMap[itemType] || 'default_ico.png';
+
+                    let contentHtml = `<b>Type:</b> ${item.type}<br>`;
+
+                    if (item.item_stats && item.item_stats.length > 0) {
+                        contentHtml += '<b>Stats:</b><ul>';
                         for (const stat of item.item_stats) {
                             contentHtml += `<li>${stat}</li>`;
                         }
                         contentHtml += '</ul>';
                     }
-                    if(item.source){
-                        contentHtml += `Source: ${item.source.type}<br>`
-                        if(item.source.mobs && item.source.mobs.length > 0){
-                            contentHtml += 'Dropped by:<br><ul>';
+
+                    if (item.source) {
+                        contentHtml += `<b>Source:</b> ${item.source.type}<br>`;
+                        if (item.source.mobs && item.source.mobs.length > 0) {
+                            contentHtml += '<ul>';
                             for (const mob of item.source.mobs) {
-                                contentHtml += `<li>${mob}</li>`;
+                                contentHtml += `<li><a href="../monster#${mob.replace(/ /g, '-')}">${mob}</a></li>`;
                             }
                             contentHtml += '</ul>';
                         }
                     }
 
-
                     html += `
                         <details class="acc-item">
                             <summary>
-                                <span>${item.name}</span>
-                                <span class="acc-icon">▼</span>
+                                <span class="item-header-main">${item.name}</span>
+                                <div class="item-header-stats">
+                                    <span>ATK: ${item.basic_stat}</span>
+                                    ${item.secondary_stat ? `<span>Stability: ${item.secondary_stat}</span>` : ''}
+                                </div>
+                                <img src="../img/icons/item/${iconFilename}" class="item-type-icon">
                             </summary>
                             <div class="content-wrapper">
                                 <div class="content-body">
