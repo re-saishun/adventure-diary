@@ -9,11 +9,18 @@
 <body>
     <nav id="sidebar">
         <button class="close-btn" onclick="toggleSidebar()">×</button>
-        <div class="logo">ADVENTURE DIARY</div>
-        <a href="../"><img src="../img/icons/brand_ico.png"><span>Home</span></a>
-        <a href="../item/"><img src="../img/icons/items_ico.png"><span>Items</span></a>
-        <a href="../monster/"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
-        <a href="./"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
+        <div class="nav-header">
+            <div class="logo-container">
+                <img src="../img/icons/brand_ico.png" alt="Logo" class="logo-img">
+                <span class="logo-name">ADVENTURE DIARY</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="../" class="home-link"><img src="../img/icons/brand_ico.png"><span>Home</span></a>
+            <a href="../item/"><img src="../img/icons/items_ico.png"><span>Items</span></a>
+            <a href="../monster/"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
+            <a href="./"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
+        </div>
     </nav>
     <main>
         <div class="header-section">
@@ -26,12 +33,14 @@
                 </div>
             </div>
         </div>
-        <div id="skill-list"></div>
+        <div id="skill-list" class="accordion-group"></div>
     </main>
     <script>
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+            const nav = document.getElementById('sidebar');
+            const main = document.querySelector('main');
+            nav.classList.toggle('active');
+            main.classList.toggle('active');
         }
 
         function toggleTheme() {
@@ -51,17 +60,67 @@
                 const response = await fetch('../database/skills.json');
                 const skills = await response.json();
                 const skillList = document.getElementById('skill-list');
-                let html = '<table><thead><tr><th>Name</th><th>Element</th></tr></thead><tbody>';
+                let html = '';
+
                 for (const skill of skills) {
-                    html += `<tr><td>${skill.name}</td><td>${skill.element}</td></tr>`;
+                    const iconFilename = `sk_${skill.name.toLowerCase().replace(/[ /]/g, '_')}.png`;
+                    const iconPath = `../img/icons/skills/${iconFilename}`;
+
+                    let contentHtml = `<b>Element:</b> ${skill.element}<br>`;
+                    if (skill.description) {
+                        contentHtml += `<b>Description:</b> ${skill.description}`;
+                    }
+
+                    html += `
+                        <details class="acc-item">
+                            <summary>
+                                <img src="${iconPath}" class="item-type-icon" onerror="this.src='../img/icons/no_image.png'">
+                                <span class="item-header-main">${skill.name}</span>
+                            </summary>
+                            <div class="content-wrapper">
+                                <div class="content-body">
+                                    ${contentHtml}
+                                </div>
+                            </div>
+                        </details>
+                    `;
                 }
-                html += '</tbody></table>';
                 skillList.innerHTML = html;
+                setupAccordion();
+
             } catch (error) {
                 console.error('Error loading skills:', error);
                 document.getElementById('skill-list').innerHTML = '<p>Could not load skills.</p>';
             }
         }
+
+        function setupAccordion() {
+            const autoClose = true;
+            document.querySelectorAll('.acc-item').forEach(el => {
+                const summary = el.querySelector('summary');
+                const wrapper = el.querySelector('.content-wrapper');
+                summary.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (el.open) {
+                        el.classList.remove('is-open');
+                        wrapper.style.height = '0px';
+                        setTimeout(() => el.open = false, 310);
+                    } else {
+                        if (autoClose) {
+                            document.querySelectorAll('.acc-item.is-open').forEach(o => {
+                                o.classList.remove('is-open');
+                                o.querySelector('.content-wrapper').style.height = '0px';
+                                setTimeout(() => o.open = false, 310);
+                            });
+                        }
+                        el.open = true;
+                        el.classList.add('is-open');
+                        wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
+                    }
+                });
+            });
+        }
+        
         loadSkills();
     </script>
 </body>
