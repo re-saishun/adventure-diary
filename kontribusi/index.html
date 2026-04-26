@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
+    <div id="overlay"></div>
     <nav id="sidebar">
         <div class="nav-header">
             <div class="logo-container">
                 <img src="../img/logo.png" alt="Logo" class="logo-img">
                 <span class="logo-name">Adv' Diary</span>
             </div>
+            <button class="close-btn" onclick="toggleSidebar()">×</button>
         </div>
         <div class="nav-links">
             <a href="../"><img src="../img/icons/brand_ico.png"><span>Home</span></a>
@@ -28,7 +30,7 @@
     <main>
         <div class="header-section">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <h2>Kontribusi</h2>
+            <h2 class="main-title">Kontribusi</h2>
             <div class="theme-switcher" onclick="toggleTheme()">
                 <div class="switcher-ball">
                     <span class="icon-day">☀️</span>
@@ -36,6 +38,8 @@
                 </div>
             </div>
         </div>
+        
+        <div id="notification" class="notification"></div>
 
         <div class="contribution-form-container">
             <p>Terima kasih telah membantu mengembangkan Adventure Diary! Silakan pilih jenis data yang ingin Anda kirimkan.</p>
@@ -51,13 +55,43 @@
                 <input type="text" name="name" placeholder="Nama Item" required>
                 <select name="type" required>
                     <option value="" disabled selected>Pilih Tipe Item</option>
-                    <option value="One-Handed Sword">One-Handed Sword</option>
-                    <option value="Two-Handed Sword">Two-Handed Sword</option>
-                    <option value="Bow">Bow</option>
-                    <option value="Staff">Staff</option>
-                    <option value="Body Armor">Body Armor</option>
+                    <optgroup label="Equipment">
+                        <option value="One-Handed Sword">One-Handed Sword</option>
+                        <option value="Two-Handed Sword">Two-Handed Sword</option>
+                        <option value="Bow">Bow</option>
+                        <option value="Bowgun">Bowgun</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Magic Device">Magic Device</option>
+                        <option value="Knuckles">Knuckles</option>
+                        <option value="Halberd">Halberd</option>
+                        <option value="Katana">Katana</option>
+                        <option value="Dagger">Dagger</option>
+                        <option value="Arrow">Arrow</option>
+                        <option value="Shield">Shield</option>
+                        <option value="Body Armor">Body Armor (Armor)</option>
+                        <option value="Additional Gear">Additional Gear</option>
+                        <option value="Special Gear">Special Gear</option>
+                    </optgroup>
+                    <optgroup label="Crysta">
+                        <option value="Normal Crysta">Normal Crysta</option>
+                        <option value="Weapon Crysta">Weapon Crysta</option>
+                        <option value="Armor Crysta">Armor Crysta</option>
+                        <option value="Additional Crysta">Additional Crysta</option>
+                        <option value="Special Crysta">Special Crysta</option>
+                    </optgroup>
+                    <optgroup label="Materials">
+                        <option value="Medicine">Medicine</option>
+                        <option value="Beast">Beast</option>
+                        <option value="Wood">Wood</option>
+                        <option value="Metal">Metal</option>
+                        <option value="Cloth">Cloth</option>
+                        <option value="Mana">Mana</option>
+                     </optgroup>
+                    <optgroup label="Others">
+                        <option value="Quest Item">Quest Item</option>
+                    </optgroup>
                 </select>
-                <input type="number" name="base_atk_def" placeholder="Base ATK/DEF" required>
+                <input type="number" name="base_atk_def" placeholder="Base ATK/DEF">
                 <textarea name="stats" placeholder="Stat Tambahan (pisahkan dengan koma)"></textarea>
                 <textarea name="obtains" placeholder="Diperoleh dari (pisahkan dengan koma)"></textarea>
                 <input type="text" name="credit" placeholder="Nama Anda (Credit)" required>
@@ -86,9 +120,15 @@
     </main>
 
     <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
+        
+        overlay.addEventListener('click', toggleSidebar);
 
         function toggleTheme() {
             const body = document.documentElement;
@@ -101,7 +141,7 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        // Script untuk beralih antara formulir
+        // Form switching script
         const itemForm = document.getElementById('item-form');
         const monsterForm = document.getElementById('monster-form');
         const showItemBtn = document.getElementById('show-item-form');
@@ -119,6 +159,35 @@
             monsterForm.style.display = 'block';
             showMonsterBtn.classList.add('active');
             showItemBtn.classList.remove('active');
+        });
+
+        // Form submission handling
+        const notification = document.getElementById('notification');
+
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        itemForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            const message = `Kontribusi item "${data.name}" (${data.type}) dari ${data.credit} telah diterima! Terima kasih!`;
+            showNotification(message);
+            this.reset();
+        });
+
+        monsterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            const message = `Kontribusi monster "${data.name}" (Lv. ${data.level}) dari ${data.credit} telah diterima! Terima kasih!`;
+            showNotification(message);
+            this.reset();
         });
 
     </script>
