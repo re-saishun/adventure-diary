@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300..700&display=swap');
 
 :root {
     --bg-color: #ffffff;
@@ -19,7 +20,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Signika', sans-serif;
 }
 
 body {
@@ -170,34 +171,36 @@ nav.active + main {
 }
 
 
-.hero {
-    text-align: center;
-    padding: 50px 0;
+/* Toolbar */
+.toolbar {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
 }
 
-.hero h1 { font-size: 3rem; margin-bottom: 10px; }
-.hero p { opacity: 0.8; }
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
-}
-
-.stat-card {
-    padding: 20px;
+#search-bar {
+    flex-grow: 1;
+    padding: 8px 12px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    text-align: center;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
+
+#type-filter {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
 
 /* Accordion Styles */
 .accordion-group { 
-    width: 100%; 
-    max-width: 800px; 
-    box-sizing: border-box; 
-    font-size: 15px; 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
 }
 
 .acc-item { 
@@ -206,7 +209,7 @@ nav.active + main {
     overflow: hidden; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
     border-radius: 8px; 
-    margin-bottom: 15px; 
+    margin-bottom: 0; /* remove margin-bottom since gap is used */
 }
 
 summary {
@@ -231,16 +234,23 @@ summary::-webkit-details-marker {
 
 .item-header-main {
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .item-header-stats {
     font-size: 0.9em;
     color: var(--text-color-secondary);
+    display: flex;
+    gap: 10px;
+    white-space: nowrap;
 }
 
 .item-type-icon {
     width: 24px;
     height: 24px;
+    flex-shrink: 0;
 }
 
 .content-wrapper {
@@ -274,6 +284,13 @@ summary::-webkit-details-marker {
     /* height is set by JS */
 }
 
+@media (max-width: 1024px) {
+    .accordion-group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
 @media (max-width: 768px) {
     nav {
         transform: translateX(-100%);
@@ -289,6 +306,7 @@ summary::-webkit-details-marker {
     }
     main {
         margin-left: 0;
+        padding: 20px;
     }
     .menu-btn, .close-btn {
         display: block;
@@ -302,5 +320,11 @@ summary::-webkit-details-marker {
         font-size: 2rem;
         cursor: pointer;
         color: var(--text-color);
+    }
+    .accordion-group {
+        grid-template-columns: 1fr;
+    }
+    .toolbar {
+        flex-direction: column;
     }
 }

@@ -26,6 +26,15 @@
                 </div>
             </div>
         </div>
+        <div class="toolbar">
+            <input type="text" id="search-bar" placeholder="Search for a monster...">
+            <select id="type-filter">
+                <option value="all">All Types</option>
+                <option value="monster">Monster</option>
+                <option value="miniboss">Miniboss</option>
+                <option value="boss">Boss</option>
+            </select>
+        </div>
         <div id="monster-list" class="accordion-group"></div>
     </main>
     <script>
@@ -38,7 +47,6 @@
             const body = document.documentElement;
             const currentTheme = body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }
@@ -46,60 +54,108 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
+        let allMonsters = [];
+
         async function loadMonsters() {
             try {
                 const response = await fetch('../database/monsters.json');
-                const monsters = await response.json();
-                const monsterList = document.getElementById('monster-list');
-                let html = '';
-                for (const monster of monsters) {
-                    html += `
-                        <details class="acc-item">
-                            <summary>
-                                <span>${monster.name}</span>
-                                <span class="acc-icon">▼</span>
-                            </summary>
-                            <div class="content-wrapper">
-                                <div class="content-body">
-                                    Element: ${monster.element}
-                                </div>
-                            </div>
-                        </details>
-                    `;
-                }
-                monsterList.innerHTML = html;
-
-                const autoClose = true;
-                document.querySelectorAll('.acc-item').forEach(el => {
-                    const summary = el.querySelector('summary');
-                    const wrapper = el.querySelector('.content-wrapper');
-                    summary.onclick = (e) => {
-                        e.preventDefault();
-                        if (el.open) {
-                            el.classList.remove('is-open');
-                            wrapper.style.height = '0px';
-                            setTimeout(() => el.open = false, 310);
-                        } else {
-                            if (autoClose) {
-                                document.querySelectorAll('.acc-item.is-open').forEach(o => {
-                                    o.classList.remove('is-open');
-                                    o.querySelector('.content-wrapper').style.height = '0px';
-                                    setTimeout(() => o.open = false, 310);
-                                });
-                            }
-                            el.open = true;
-                            el.classList.add('is-open');
-                            wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
-                        }
-                    };
-                });
-
+                allMonsters = await response.json();
+                displayMonsters(allMonsters);
+                setupAccordion();
             } catch (error) {
                 console.error('Error loading monsters:', error);
                 document.getElementById('monster-list').innerHTML = '<p>Could not load monsters.</p>';
             }
         }
-        loadMonsters();
+
+        function displayMonsters(monsters) {
+            const monsterList = document.getElementById('monster-list');
+            let html = '';
+            for (const monster of monsters) {
+                const monsterId = monster.name.replace(/ /g, '-');
+                html += `
+                    <details class="acc-item" id="${monsterId}">
+                        <summary>
+                            <span class="item-header-main">${monster.name}</span>
+                            <div class="item-header-stats">
+                                <span>${monster.jenis}</span>
+                            </div>
+                        </summary>
+                        <div class="content-wrapper">
+                            <div class="content-body">
+                                <b>Level:</b> ${monster.level}<br>
+                                <b>HP:</b> ${monster.hp}<br>
+                                <b>Element:</b> ${monster.element}<br>
+                                <b>Location:</b> ${monster.location}<br>
+                                <b>Drops:</b>
+                                <ul>
+                                    ${monster.drops.map(drop => `<li>${drop}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </details>
+                `;
+            }
+            monsterList.innerHTML = html;
+        }
+        
+        function setupAccordion() {
+            const autoClose = true;
+            document.querySelectorAll('.acc-item').forEach(el => {
+                const summary = el.querySelector('summary');
+                const wrapper = el.querySelector('.content-wrapper');
+                summary.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (el.open) {
+                        el.classList.remove('is-open');
+                        wrapper.style.height = '0px';
+                        setTimeout(() => el.open = false, 310);
+                    } else {
+                        if (autoClose) {
+                            document.querySelectorAll('.acc-item.is-open').forEach(o => {
+                                o.classList.remove('is-open');
+                                o.querySelector('.content-wrapper').style.height = '0px';
+                                setTimeout(() => o.open = false, 310);
+                            });
+                        }
+                        el.open = true;
+                        el.classList.add('is-open');
+                        wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
+                    }
+                });
+            });
+        }
+
+        function filterAndSearchMonsters() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value;
+
+            const filteredMonsters = allMonsters.filter(monster => {
+                const nameMatch = monster.name.toLowerCase().includes(searchTerm);
+                const typeMatch = typeFilter === 'all' || monster.jenis === typeFilter;
+                return nameMatch && typeMatch;
+            });
+
+            displayMonsters(filteredMonsters);
+            setupAccordion();
+        }
+        
+        document.getElementById('search-bar').addEventListener('input', filterAndSearchMonsters);
+        document.getElementById('type-filter').addEventListener('change', filterAndSearchMonsters);
+
+        loadMonsters().then(() => {
+            if (window.location.hash) {
+                const monsterId = window.location.hash.substring(1);
+                const monsterElement = document.getElementById(monsterId);
+                if (monsterElement) {
+                    setTimeout(() => {
+                        monsterElement.querySelector('summary').click();
+                        monsterElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+            }
+        });
+
     </script>
 </body>
 </html>

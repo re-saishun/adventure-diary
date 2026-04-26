@@ -96,6 +96,7 @@
                 for (const item of items) {
                     const itemType = item.type.split('-')[1];
                     const iconFilename = iconMap[itemType] || 'default_ico.png';
+                    const iconPath = `../img/icons/item/${iconFilename}`;
 
                     let contentHtml = `<b>Type:</b> ${item.type}<br>`;
 
@@ -126,7 +127,7 @@
                                     <span>ATK: ${item.basic_stat}</span>
                                     ${item.secondary_stat ? `<span>Stability: ${item.secondary_stat}</span>` : ''}
                                 </div>
-                                <img src="../img/icons/item/${iconFilename}" class="item-type-icon">
+                                <img src="${iconPath}" class="item-type-icon">
                             </summary>
                             <div class="content-wrapper">
                                 <div class="content-body">
