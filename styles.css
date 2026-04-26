@@ -55,7 +55,9 @@ nav.active span {
 .nav-header {
     display: flex;
     align-items: center;
+    justify-content: center; /* Center logo when sidebar is active */
     padding: 20px;
+    height: 81px; /* Fixed height */
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -66,10 +68,14 @@ nav.active span {
 }
 
 .logo-img {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
     flex-shrink: 0;
+}
+
+nav.active .logo-img {
+    margin-right: 0; /* No margin when text is hidden */
 }
 
 .logo-name {
@@ -98,8 +104,12 @@ nav a {
 
 nav.active a {
     margin: 5px;
+    justify-content: center; /* Center icons */
 }
 
+nav.active a img {
+    margin-right: 0;
+}
 
 nav a img {
     margin-right: 10px;
@@ -376,9 +386,9 @@ summary::-webkit-details-marker {
 }
 
 .main-title {
-    font-family: 'Great Vibes', cursive;
-    font-size: 2.5rem;
-    font-weight: normal;
+    font-family: 'Signika', sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
     text-align: center;
     flex-grow: 1;
 }
