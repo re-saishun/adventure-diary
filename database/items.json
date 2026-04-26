@@ -2,7 +2,7 @@
 [
     {
         "name": "Iron-blue knife",
-        "type": "katana",
+        "type": "Katana",
         "basic_stat": 206,
         "secondary_stat": "70%",
         "item_stats": [
