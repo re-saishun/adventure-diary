@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontribusi - Adventure Diary</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <nav id="sidebar">
+        <div class="nav-header">
+            <div class="logo-container">
+                <img src="../img/logo.png" alt="Logo" class="logo-img">
+                <span class="logo-name">Adventure Diary</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="../"><img src="../img/icons/brand_ico.png"><span>Home</span></a>
+            <a href="../item/"><img src="../img/icons/items_ico.png"><span>Items</span></a>
+            <a href="../monster/"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
+            <a href="../skill/"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
+        </div>
+        <div class="nav-links-footer">
+            <a href="./"><img src="../img/icons/quest_ico.png"><span>Kontribusi</span></a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="header-section">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <h2>Kontribusi</h2>
+            <div class="theme-switcher" onclick="toggleTheme()">
+                <div class="switcher-ball">
+                    <span class="icon-day">☀️</span>
+                    <span class="icon-night">🌙</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="contribution-form-container">
+            <p>Terima kasih telah membantu mengembangkan Adventure Diary! Silakan pilih jenis data yang ingin Anda kirimkan.</p>
+            
+            <div class="form-selector">
+                <button id="show-item-form" class="active">Item Baru</button>
+                <button id="show-monster-form">Monster Baru</button>
+            </div>
+
+            <!-- Formulir Item -->
+            <form id="item-form" class="contribution-form">
+                <h3>Data Item Baru</h3>
+                <input type="text" name="name" placeholder="Nama Item" required>
+                <select name="type" required>
+                    <option value="" disabled selected>Pilih Tipe Item</option>
+                    <option value="One-Handed Sword">One-Handed Sword</option>
+                    <option value="Two-Handed Sword">Two-Handed Sword</option>
+                    <option value="Bow">Bow</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Body Armor">Body Armor</option>
+                </select>
+                <input type="number" name="base_atk_def" placeholder="Base ATK/DEF" required>
+                <textarea name="stats" placeholder="Stat Tambahan (pisahkan dengan koma)"></textarea>
+                <textarea name="obtains" placeholder="Diperoleh dari (pisahkan dengan koma)"></textarea>
+                <input type="text" name="credit" placeholder="Nama Anda (Credit)" required>
+                <button type="submit">Kirim Item</button>
+            </form>
+
+            <!-- Formulir Monster -->
+            <form id="monster-form" class="contribution-form" style="display: none;">
+                <h3>Data Monster Baru</h3>
+                <input type="text" name="name" placeholder="Nama Monster" required>
+                 <select name="type" required>
+                    <option value="" disabled selected>Pilih Tipe Monster</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Mini Boss">Mini Boss</option>
+                    <option value="Boss">Boss</option>
+                </select>
+                <input type="number" name="level" placeholder="Level">
+                <input type="number" name="hp" placeholder="HP">
+                <input type="text" name="element" placeholder="Elemen">
+                <input type="text" name="location" placeholder="Lokasi">
+                <textarea name="drops" placeholder="Drop Items (pisahkan dengan koma)"></textarea>
+                <input type="text" name="credit" placeholder="Nama Anda (Credit)" required>
+                <button type="submit">Kirim Monster</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Script untuk beralih antara formulir
+        const itemForm = document.getElementById('item-form');
+        const monsterForm = document.getElementById('monster-form');
+        const showItemBtn = document.getElementById('show-item-form');
+        const showMonsterBtn = document.getElementById('show-monster-form');
+
+        showItemBtn.addEventListener('click', () => {
+            itemForm.style.display = 'block';
+            monsterForm.style.display = 'none';
+            showItemBtn.classList.add('active');
+            showMonsterBtn.classList.remove('active');
+        });
+
+        showMonsterBtn.addEventListener('click', () => {
+            itemForm.style.display = 'none';
+            monsterForm.style.display = 'block';
+            showMonsterBtn.classList.add('active');
+            showItemBtn.classList.remove('active');
+        });
+
+    </script>
+</body>
+</html>
