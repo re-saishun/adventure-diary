@@ -45,6 +45,8 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .logo {
@@ -75,6 +77,7 @@
             margin-left: 250px;
             padding: 40px;
             width: 100%;
+            transition: margin-left 0.3s ease;
         }
 
         .header-section {
@@ -86,15 +89,74 @@
             margin-bottom: 30px;
         }
 
-        .theme-toggle {
-            cursor: pointer;
-            padding: 8px 16px;
-            background: var(--text-color);
-            color: var(--bg-color);
+        .menu-btn {
+            display: none;
+            background: none;
             border: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
         }
+
+        .close-btn {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .theme-switcher {
+            width: 60px;
+            height: 30px;
+            background-color: var(--border-color);
+            border-radius: 15px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .switcher-ball {
+            width: 26px;
+            height: 26px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            left: 2px;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .icon-day, .icon-night {
+            font-size: 18px;
+            position: absolute;
+            transition: opacity 0.3s ease;
+        }
+
+        .icon-night {
+            opacity: 0;
+        }
+
+        [data-theme="dark"] .switcher-ball {
+            transform: translateX(30px);
+        }
+
+        [data-theme="dark"] .icon-day {
+            opacity: 0;
+        }
+
+        [data-theme="dark"] .icon-night {
+            opacity: 1;
+        }
+
 
         .hero {
             text-align: center;
@@ -119,16 +181,25 @@
         }
 
         @media (max-width: 768px) {
-            nav { width: 70px; padding: 10px; }
-            nav a span { display: none; }
-            main { margin-left: 70px; }
-            .logo { font-size: 1rem; }
+            nav {
+                transform: translateX(-100%);
+            }
+            nav.active {
+                transform: translateX(0);
+            }
+            main {
+                margin-left: 0;
+            }
+            .menu-btn, .close-btn {
+                display: block;
+            }
         }
     </style>
 </head>
 <body>
 
-    <nav>
+    <nav id="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
         <div class="logo">ADVENTURE DIARY</div>
         <a href="/"><span>🏠 Home</span></a>
         <a href="/item/"><span>⚔️ Items</span></a>
@@ -138,8 +209,14 @@
 
     <main>
         <div class="header-section">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
             <h2>Dashboard</h2>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Dark Mode</button>
+            <div class="theme-switcher" onclick="toggleTheme()">
+                <div class="switcher-ball">
+                    <span class="icon-day">☀️</span>
+                    <span class="icon-night">🌙</span>
+                </div>
+            </div>
         </div>
 
         <section class="hero">
@@ -164,7 +241,11 @@
     </main>
 
     <script>
-        // Fitur Dark Mode
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
         function toggleTheme() {
             const body = document.documentElement;
             const currentTheme = body.getAttribute('data-theme');
@@ -172,23 +253,16 @@
             
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            document.getElementById('themeBtn').innerText = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
         }
 
-        // Load saved theme
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').innerText = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
 
-        // Contoh cara mengambil data dari folder /database/
         async function loadStats() {
             try {
-                // Kamu harus membuat file items.json, monsters.json, dll di folder /database/
                 const itemRes = await fetch('/database/items.json');
                 const items = await itemRes.json();
                 document.getElementById('count-item').innerText = items.length + " Total Items";
-                
-                // Tambahkan fetch lain untuk monster dan skill sesuai kebutuhan
             } catch (err) {
                 document.getElementById('count-item').innerText = "Data not found";
             }
