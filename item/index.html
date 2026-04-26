@@ -103,9 +103,9 @@
                 };
 
                 for (const item of items) {
-                    const itemType = item.type.split('-')[1];
+                    const itemType = item.type.includes('-') ? item.type.split('-')[1] : item.type;
                     const iconFilename = iconMap[itemType] || 'default_ico.png';
-                    const iconPath = `../img/icons/${iconFilename}`;
+                    const iconPath = `../img/icons/item/${iconFilename}`;
 
                     let contentHtml = `<b>Type:</b> ${item.type}<br>`;
 
