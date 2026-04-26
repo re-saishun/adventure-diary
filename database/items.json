@@ -1,1 +1,22 @@
-[]
+
+[
+    {
+        "name": "Iron-blue knife",
+        "type": "weapon-katana",
+        "basic_stat": 206,
+        "secondary_stat": "70%",
+        "item_stats": [
+            "Element Water",
+            "Short Range Damage+10%",
+            "Attack MP Recovery+15",
+            "Evasion Recharge+10%"
+        ],
+        "source": {
+            "type": "Mob Drop",
+            "mobs": [
+                "Shabo Hat Beast",
+                "Ruishu Mountain Road"
+            ]
+        }
+    }
+]

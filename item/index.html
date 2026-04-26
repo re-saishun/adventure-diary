@@ -53,6 +53,30 @@
                 const itemList = document.getElementById('item-list');
                 let html = '';
                 for (const item of items) {
+                    let contentHtml = `Type: ${item.type}<br>`
+                    contentHtml += `ATK: ${item.basic_stat}<br>`
+                    if(item.secondary_stat){
+                      contentHtml += `Stability: ${item.secondary_stat}<br>`
+                    }
+                    if(item.item_stats && item.item_stats.length > 0) {
+                        contentHtml += 'Stats:<br><ul>';
+                        for (const stat of item.item_stats) {
+                            contentHtml += `<li>${stat}</li>`;
+                        }
+                        contentHtml += '</ul>';
+                    }
+                    if(item.source){
+                        contentHtml += `Source: ${item.source.type}<br>`
+                        if(item.source.mobs && item.source.mobs.length > 0){
+                            contentHtml += 'Dropped by:<br><ul>';
+                            for (const mob of item.source.mobs) {
+                                contentHtml += `<li>${mob}</li>`;
+                            }
+                            contentHtml += '</ul>';
+                        }
+                    }
+
+
                     html += `
                         <details class="acc-item">
                             <summary>
@@ -61,7 +85,7 @@
                             </summary>
                             <div class="content-wrapper">
                                 <div class="content-body">
-                                    Type: ${item.type}
+                                    ${contentHtml}
                                 </div>
                             </div>
                         </details>
