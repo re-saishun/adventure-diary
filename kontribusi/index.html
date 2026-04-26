@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontribusi - Adventure Diary</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .form-toggle button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .form-toggle button.active {
+            background: var(--accent-color);
+            color: var(--header-nav-text);
+            border-color: var(--accent-color);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        @media (min-width: 600px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .form-grid .full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-color);
+            color: var(--header-nav-text);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav id="sidebar">
+        <div class="nav-header">
+            <div class="logo-container">
+                <img src="../img/icons/brand_ico.png" alt="Logo" class="logo-img">
+                <span class="logo-name">Adv' Diary</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="../"><img src="../img/icons/brand_ico.png"><span>Home</span></a>
+            <a href="../item/"><img src="../img/icons/items_ico.png"><span>Items</span></a>
+            <a href="../monster/"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
+            <a href="../skill/"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
+        </div>
+        <div class="nav-links-footer">
+            <a href="./"><span>Kontribusi</span></a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="header-section">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <h2>Kontribusi Data</h2>
+        </div>
+
+        <div class="form-container">
+            <div class="form-toggle">
+                <button id="show-item-form" class="active">Item</button>
+                <button id="show-monster-form">Monster</button>
+            </div>
+
+            <!-- Item Form -->
+            <form id="item-form" class="form-section active">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="item-name">Nama Item</label>
+                        <input type="text" id="item-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-type">Tipe Item</label>
+                        <select id="item-type" name="type" required>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-base_atk">Base ATK</label>
+                        <input type="number" id="item-base_atk" name="base_atk">
+                    </div>
+                    <div class="form-group">
+                        <label for="item-base_def">Base DEF</label>
+                        <input type="number" id="item-base_def" name="base_def">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="item-stats">Stats</label>
+                        <textarea id="item-stats" name="stats" placeholder='Contoh:
+"ATK": 216,
+"ATK%": 80,
+"STR%": 70'></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="item-obtains">Cara Mendapatkan</label>
+                        <textarea id="item-obtains" name="obtains" placeholder="Contoh:&#10;Drop dari: Monster A,&#10;Resep Blacksmith"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="item-notes">Catatan (Opsional)</label>
+                        <textarea id="item-notes" name="notes"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="item-credit">Credit (Nama Anda)</label>
+                        <input type="text" id="item-credit" name="credit" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Kirim Data Item</button>
+            </form>
+
+            <!-- Monster Form -->
+            <form id="monster-form" class="form-section">
+                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="monster-name">Nama Monster</label>
+                        <input type="text" id="monster-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-level">Level</label>
+                        <input type="number" id="monster-level" name="level">
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-hp">HP</label>
+                        <input type="number" id="monster-hp" name="hp">
+                    </div>
+                     <div class="form-group">
+                        <label for="monster-exp">EXP</label>
+                        <input type="number" id="monster-exp" name="exp">
+                    </div>
+                    <div class="form-group">
+                        <label for="monster-type">Tipe Monster</label>
+                        <select id="monster-type" name="type" required>
+                            <option value="Normal">Normal</option>
+                            <option value="Mini Boss">Mini Boss</option>
+                            <option value="Boss">Boss</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bisa Dijinakkan?</label>
+                        <select id="monster-tamable" name="tamable">
+                            <option value="false">Tidak</option>
+                            <option value="true">Ya</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="monster-location">Lokasi</label>
+                        <input type="text" id="monster-location" name="location" placeholder="Contoh: Reruntuhan Kuil">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="monster-drops">Drops</label>
+                        <textarea id="monster-drops" name="drops" placeholder="Contoh:&#10;Pedang Besi,&#10;Kristal Monster"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="monster-credit">Credit (Nama Anda)</label>
+                        <input type="text" id="monster-credit" name="credit" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Kirim Data Monster</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Basic sidebar and theme toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+        // No theme toggle on this page as it's not in the header
+
+        // Form toggle logic
+        const itemForm = document.getElementById('item-form');
+        const monsterForm = document.getElementById('monster-form');
+        const showItemBtn = document.getElementById('show-item-form');
+        const showMonsterBtn = document.getElementById('show-monster-form');
+
+        showItemBtn.addEventListener('click', () => {
+            itemForm.classList.add('active');
+            monsterForm.classList.remove('active');
+            showItemBtn.classList.add('active');
+            showMonsterBtn.classList.remove('active');
+        });
+
+        showMonsterBtn.addEventListener('click', () => {
+            monsterForm.classList.add('active');
+            itemForm.classList.remove('active');
+            showMonsterBtn.classList.add('active');
+            showItemBtn.classList.remove('active');
+        });
+
+        // Populate item types
+        const itemTypes = [
+            "One-Handed Sword", "Two-Handed Sword", "Bow", "Bowgun", "Staff", 
+            "Magic Device", "Knuckle", "Halberd", "Katana", "Body Armor", 
+            "Additional Gear", "Special Gear", "Shield", "Dagger", "Arrow", 
+            "Ninjutsu Scroll", "Crysta Normal Base", "Crysta Normal Up", 
+            "Crysta Normal Max", "Crysta Weapon Base", "Crysta Weapon Up",
+            "Crysta Weapon Max", "Crysta Armor Base", "Crysta Armor Up",
+            "Crysta Armor Max", "Crysta Additional Base", "Crysta Additional Up",
+            "Crysta Additional Max", "Crysta Special Base", "Crysta Special Up",
+            "Crysta Special Max", "Material Metal", "Material Cloth"
+        ];
+        
+        const itemTypeSelect = document.getElementById('item-type');
+        itemTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            itemTypeSelect.appendChild(option);
+        });
+
+        // Handle form submission (placeholder)
+        document.getElementById('item-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Terima kasih atas kontribusi Anda! Data item sedang ditinjau oleh editor.');
+            this.reset();
+        });
+
+        document.getElementById('monster-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Terima kasih atas kontribusi Anda! Data monster sedang ditinjau oleh editor.');
+            this.reset();
+        });
+
+    </script>
+</body>
+</html>

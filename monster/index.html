@@ -12,7 +12,7 @@
         <div class="nav-header">
             <div class="logo-container">
                 <img src="../img/icons/brand_ico.png" alt="Logo" class="logo-img">
-                <span class="logo-name">ADVENTURE DIARY</span>
+                <span class="logo-name">Adv' Diary</span>
             </div>
         </div>
         <div class="nav-links">
@@ -20,6 +20,9 @@
             <a href="../item/"><img src="../img/icons/items_ico.png"><span>Items</span></a>
             <a href="./"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
             <a href="../skill/"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
+        </div>
+        <div class="nav-links-footer">
+            <a href="../kontribusi/"><span>Kontribusi</span></a>
         </div>
     </nav>
     <main>
@@ -34,22 +37,19 @@
             </div>
         </div>
         <div class="toolbar">
-            <input type="text" id="search-bar" placeholder="Search for a monster...">
+            <input type="text" id="search-bar" placeholder="Cari monster...">
             <select id="type-filter">
-                <option value="all">All Types</option>
-                <option value="monster">Monster</option>
-                <option value="miniboss">Miniboss</option>
-                <option value="boss">Boss</option>
+                <option value="all">Semua Tipe</option>
+                <option value="Normal">Normal</option>
+                <option value="Mini Boss">Mini Boss</option>
+                <option value="Boss">Boss</option>
             </select>
         </div>
         <div id="monster-list" class="accordion-group"></div>
     </main>
     <script>
         function toggleSidebar() {
-            const nav = document.getElementById('sidebar');
-            const main = document.querySelector('main');
-            nav.classList.toggle('active');
-            main.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
         function toggleTheme() {
@@ -70,10 +70,10 @@
                 const response = await fetch('../database/monsters.json');
                 allMonsters = await response.json();
                 displayMonsters(allMonsters);
-                setupAccordion();
+                setupAccordionAndPermalinks();
             } catch (error) {
                 console.error('Error loading monsters:', error);
-                document.getElementById('monster-list').innerHTML = '<p>Could not load monsters.</p>';
+                document.getElementById('monster-list').innerHTML = '<p>Gagal memuat monster.</p>';
             }
         }
 
@@ -82,38 +82,47 @@
             let html = '';
             for (const monster of monsters) {
                 const monsterId = monster.name.replace(/ /g, '-');
+                const dropsHtml = monster.drops.map(drop => {
+                    return `<li><a href="../item/#${drop.replace(/ /g, '-')}">${drop}</a></li>`;
+                }).join('');
+                
+                const creditTag = monster.credit ? `<div class="credit-tag">${monster.credit}</div>` : '';
+
                 html += `
                     <details class="acc-item" id="${monsterId}">
                         <summary>
-                            <span class="item-header-main">${monster.name}</span>
+                            <span class="item-header-main"><a href="#${monsterId}">${monster.name}</a></span>
                             <div class="item-header-stats">
-                                <span>${monster.jenis}</span>
+                                <span>${monster.type}</span>
                             </div>
                         </summary>
                         <div class="content-wrapper">
                             <div class="content-body">
-                                <b>Level:</b> ${monster.level}<br>
-                                <b>HP:</b> ${monster.hp}<br>
-                                <b>Element:</b> ${monster.element}<br>
-                                <b>Location:</b> ${monster.location}<br>
+                                <b>Level:</b> ${monster.level || 'N/A'}<br>
+                                <b>HP:</b> ${monster.hp ? monster.hp.toLocaleString() : 'N/A'}<br>
+                                <b>EXP:</b> ${monster.exp ? monster.exp.toLocaleString() : 'N/A'}<br>
+                                <b>Lokasi:</b> ${monster.location || 'N/A'}<br>
+                                <b>Dapat Dijinakkan:</b> ${monster.tamable ? 'Ya' : 'Tidak'}<br>
                                 <b>Drops:</b>
                                 <ul>
-                                    ${monster.drops.map(drop => `<li>${drop}</li>`).join('')}
+                                    ${dropsHtml}
                                 </ul>
                             </div>
                         </div>
+                        ${creditTag}
                     </details>
                 `;
             }
             monsterList.innerHTML = html;
         }
         
-        function setupAccordion() {
+        function setupAccordionAndPermalinks() {
             const autoClose = true;
             document.querySelectorAll('.acc-item').forEach(el => {
                 const summary = el.querySelector('summary');
                 const wrapper = el.querySelector('.content-wrapper');
                 summary.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'A') return; 
                     e.preventDefault();
                     if (el.open) {
                         el.classList.remove('is-open');
@@ -133,6 +142,21 @@
                     }
                 });
             });
+
+            // Permalink handling
+            if (window.location.hash) {
+                const monsterId = window.location.hash.substring(1);
+                const monsterElement = document.getElementById(monsterId);
+                if (monsterElement) {
+                    setTimeout(() => {
+                        // Ensure it's not already open before clicking
+                        if (!monsterElement.open) {
+                           monsterElement.querySelector('summary').click();
+                        }
+                        monsterElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 150); 
+                }
+            }
         }
 
         function filterAndSearchMonsters() {
@@ -141,29 +165,19 @@
 
             const filteredMonsters = allMonsters.filter(monster => {
                 const nameMatch = monster.name.toLowerCase().includes(searchTerm);
-                const typeMatch = typeFilter === 'all' || monster.jenis === typeFilter;
+                const typeMatch = typeFilter === 'all' || monster.type === typeFilter;
                 return nameMatch && typeMatch;
             });
 
             displayMonsters(filteredMonsters);
-            setupAccordion();
+            // Re-setup the accordion for the filtered results
+            setupAccordionAndPermalinks(); 
         }
         
         document.getElementById('search-bar').addEventListener('input', filterAndSearchMonsters);
         document.getElementById('type-filter').addEventListener('change', filterAndSearchMonsters);
 
-        loadMonsters().then(() => {
-            if (window.location.hash) {
-                const monsterId = window.location.hash.substring(1);
-                const monsterElement = document.getElementById(monsterId);
-                if (monsterElement) {
-                    setTimeout(() => {
-                        monsterElement.querySelector('summary').click();
-                        monsterElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                }
-            }
-        });
+        loadMonsters();
 
     </script>
 </body>
