@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adventure Diary - Toram Online Database</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .welcome-section {
+            text-align: center;
+            padding: 50px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            background-color: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+        }
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background-color: var(--sidebar-bg);
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+    </style>
 </head>
 <body>
 
@@ -13,14 +57,14 @@
         <div class="nav-header">
             <div class="logo-container">
                 <img src="img/icons/brand_ico.png" alt="Logo" class="logo-img">
-                <span class="logo-name">ADVENTURE DIARY</span>
+                <span class="logo-name">Adv' Diary</span>
             </div>
         </div>
         <div class="nav-links">
             <a href="./" class="home-link"><img src="img/icons/brand_ico.png"><span>Home</span></a>
             <a href="item/"><img src="img/icons/items_ico.png"><span>Items</span></a>
             <a href="monster/"><img src="img/icons/monsters_ico.png"><span>Monsters</span></a>
-            <a href="skill/"><img src="img/icons/skills/skills_ico.png"><span>Skills</span></a>
+            <a href="skill/"><img src="img/icons/skills_ico.png"><span>Skills</span></a>
         </div>
     </nav>
 
@@ -36,9 +80,9 @@
             </div>
         </div>
 
-        <section class="hero">
-            <h1>Toram Online Database</h1>
-            <p>Penyimpanan data petualangan pribadi dan informasi game terlengkap.</p>
+        <section class="welcome-section">
+            <h1>Selamat Datang, Petualang!</h1>
+            <p>Jelajahi dan temukan semua yang Anda butuhkan untuk petualangan Toram Online Anda.</p>
         </section>
 
         <div class="stats-grid">
@@ -81,20 +125,20 @@
             try {
                 const itemRes = await fetch('database/items.json');
                 const items = await itemRes.json();
-                document.getElementById('count-item').innerText = items.length + " Total Items";
+                document.getElementById('count-item').innerText = items.length;
 
                 const monsterRes = await fetch('database/monsters.json');
                 const monsters = await monsterRes.json();
-                document.getElementById('count-monster').innerText = monsters.length + " Total Monsters";
+                document.getElementById('count-monster').innerText = monsters.length;
 
                 const skillRes = await fetch('database/skills.json');
                 const skills = await skillRes.json();
-                document.getElementById('count-skill').innerText = skills.length + " Total Skills";
+                document.getElementById('count-skill').innerText = skills.length;
             } catch (err) {
                 console.error(err);
-                document.getElementById('count-item').innerText = "Data not found";
-                document.getElementById('count-monster').innerText = "Data not found";
-                document.getElementById('count-skill').innerText = "Data not found";
+                document.getElementById('count-item').innerText = "N/A";
+                document.getElementById('count-monster').innerText = "N/A";
+                document.getElementById('count-skill').innerText = "N/A";
             }
         }
 

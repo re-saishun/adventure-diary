@@ -78,6 +78,7 @@ nav.active span {
     white-space: nowrap;
 }
 
+
 .nav-links {
     padding-top: 10px;
     flex-grow: 1;
@@ -96,7 +97,7 @@ nav a {
 }
 
 nav.active a {
-    margin: 5px -15px;
+    margin: 5px;
 }
 
 
@@ -343,6 +344,7 @@ summary::-webkit-details-marker {
     nav.active .logo-name,
     nav.active span {
         display: block;
+        font-size: 1rem;
     }
     main {
         margin-left: 0;

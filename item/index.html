@@ -12,7 +12,7 @@
         <div class="nav-header">
             <div class="logo-container">
                 <img src="../img/icons/brand_ico.png" alt="Logo" class="logo-img">
-                <span class="logo-name">ADVENTURE DIARY</span>
+                <span class="logo-name">Adv' Diary</span>
             </div>
         </div>
         <div class="nav-links">
@@ -105,7 +105,8 @@
                 for (const item of items) {
                     const itemType = item.type.includes('-') ? item.type.split('-')[1] : item.type;
                     const iconFilename = iconMap[itemType] || 'default_ico.png';
-                    const iconPath = `../img/icons/item/${iconFilename}`;
+                    const iconPath = `../img/icons/${iconFilename}`;
+                    const statType = item.type === 'Body Armor' || item.type === 'Additional Gear' || item.type === 'Special Gear' ? 'DEF' : 'ATK';
 
                     let contentHtml = `<b>Type:</b> ${item.type}<br>`;
 
@@ -133,8 +134,7 @@
                             <summary>
                                 <span class="item-header-main">${item.name}</span>
                                 <div class="item-header-stats">
-                                    <span>ATK: ${item.basic_stat}</span>
-                                    ${item.secondary_stat ? `<span>Stability: ${item.secondary_stat}</span>` : ''}
+                                    <span>${item.basic_stat} ${statType} ${item.secondary_stat ? `(${item.secondary_stat})` : ''}</span>
                                 </div>
                                 <img src="${iconPath}" class="item-type-icon">
                             </summary>
