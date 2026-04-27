@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
+    <div id="overlay"></div>
     <nav id="sidebar">
-        <button class="close-btn" onclick="toggleSidebar()">×</button>
         <div class="nav-header">
             <div class="logo-container">
                 <img src="../img/logo.png" alt="Logo" class="logo-img">
                 <span class="logo-name">Adv' Diary</span>
             </div>
+            <button class="close-btn" onclick="toggleSidebar()">×</button>
         </div>
         <div class="nav-links">
             <a href="../" class="home-link"><img src="../img/icons/brand_ico.png"><span>Home</span></a>
@@ -21,11 +22,14 @@
             <a href="./"><img src="../img/icons/monsters_ico.png"><span>Monsters</span></a>
             <a href="../skill/"><img src="../img/icons/skills_ico.png"><span>Skills</span></a>
         </div>
+        <div class="nav-links-footer">
+             <a href="../kontribusi/"><img src="../img/icons/quest_ico.png"><span>Kontribusi</span></a>
+        </div>
     </nav>
     <main>
         <div class="header-section">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <h2>Monsters</h2>
+            <h1 class="main-title">Monsters</h1>
             <div class="theme-switcher" onclick="toggleTheme()">
                 <div class="switcher-ball">
                     <span class="icon-day">☀️</span>
@@ -34,23 +38,26 @@
             </div>
         </div>
         <div class="toolbar">
-            <input type="text" id="search-bar" placeholder="Search for a monster...">
+            <input type="text" id="search-bar" placeholder="Cari monster...">
             <select id="type-filter">
-                <option value="all">All Types</option>
-                <option value="monster">Monster</option>
-                <option value="miniboss">Miniboss</option>
-                <option value="boss">Boss</option>
+                <option value="all">Semua Tipe</option>
+                <option value="Normal">Normal</option>
+                <option value="Mini Boss">Mini Boss</option>
+                <option value="Boss">Boss</option>
             </select>
         </div>
         <div id="monster-list" class="accordion-group"></div>
     </main>
     <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
         function toggleSidebar() {
-            const nav = document.getElementById('sidebar');
-            const main = document.querySelector('main');
-            nav.classList.toggle('active');
-            main.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
+
+        overlay.addEventListener('click', toggleSidebar);
 
         function toggleTheme() {
             const body = document.documentElement;
@@ -67,14 +74,41 @@
 
         async function loadMonsters() {
             try {
-                const response = await fetch('../database/monsters.json');
+                const response = await fetch('../data/monsters.json');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 allMonsters = await response.json();
                 displayMonsters(allMonsters);
-                setupAccordion();
             } catch (error) {
                 console.error('Error loading monsters:', error);
-                document.getElementById('monster-list').innerHTML = '<p>Could not load monsters.</p>';
+                document.getElementById('monster-list').innerHTML = '<p>Tidak dapat memuat data monster.</p>';
             }
+        }
+
+        function setupAccordion() {
+            const autoClose = true;
+            document.querySelectorAll('.acc-item').forEach(el => {
+                const summary = el.querySelector('summary');
+                const wrapper = el.querySelector('.content-wrapper');
+                summary.onclick = (e) => {
+                    e.preventDefault();
+                     if (el.classList.contains('is-open')) {
+                        el.classList.remove('is-open');
+                        wrapper.style.height = '0px';
+                        el.open = false;
+                    } else {
+                        if (autoClose) {
+                            document.querySelectorAll('.acc-item.is-open').forEach(o => {
+                                o.classList.remove('is-open');
+                                o.querySelector('.content-wrapper').style.height = '0px';
+                                o.open = false;
+                            });
+                        }
+                        el.open = true;
+                        el.classList.add('is-open');
+                        wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
+                    }
+                };
+            });
         }
 
         function displayMonsters(monsters) {
@@ -83,56 +117,27 @@
             for (const monster of monsters) {
                 const monsterId = monster.name.replace(/ /g, '-');
                 html += `
-                    <details class="acc-item" id="${monsterId}">
+                    <details class="acc-item" id="${monsterId}" data-type="${monster.type}">
                         <summary>
                             <span class="item-header-main">${monster.name}</span>
                             <div class="item-header-stats">
-                                <span>${monster.jenis}</span>
+                                <span>${monster.type}</span>
                             </div>
                         </summary>
                         <div class="content-wrapper">
                             <div class="content-body">
-                                <b>Level:</b> ${monster.level}<br>
-                                <b>HP:</b> ${monster.hp}<br>
-                                <b>Element:</b> ${monster.element}<br>
-                                <b>Location:</b> ${monster.location}<br>
-                                <b>Drops:</b>
-                                <ul>
-                                    ${monster.drops.map(drop => `<li>${drop}</li>`).join('')}
-                                </ul>
+                                ${monster.level ? `<b>Level:</b> ${monster.level}<br>` : ''}
+                                ${monster.hp ? `<b>HP:</b> ${monster.hp.toLocaleString()}<br>` : ''}
+                                ${monster.element ? `<b>Element:</b> ${monster.element}<br>` : ''}
+                                ${monster.location ? `<b>Location:</b> ${monster.location}<br>` : ''}
+                                ${monster.drops && monster.drops.length > 0 ? `<b>Drops:</b><ul>${monster.drops.map(drop => `<li>${drop}</li>`).join('')}</ul>` : ''}
                             </div>
                         </div>
                     </details>
                 `;
             }
             monsterList.innerHTML = html;
-        }
-        
-        function setupAccordion() {
-            const autoClose = true;
-            document.querySelectorAll('.acc-item').forEach(el => {
-                const summary = el.querySelector('summary');
-                const wrapper = el.querySelector('.content-wrapper');
-                summary.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (el.open) {
-                        el.classList.remove('is-open');
-                        wrapper.style.height = '0px';
-                        setTimeout(() => el.open = false, 310);
-                    } else {
-                        if (autoClose) {
-                            document.querySelectorAll('.acc-item.is-open').forEach(o => {
-                                o.classList.remove('is-open');
-                                o.querySelector('.content-wrapper').style.height = '0px';
-                                setTimeout(() => o.open = false, 310);
-                            });
-                        }
-                        el.open = true;
-                        el.classList.add('is-open');
-                        wrapper.style.height = wrapper.querySelector('.content-body').scrollHeight + 'px';
-                    }
-                });
-            });
+            setupAccordion(); // Set up accordion after rendering
         }
 
         function filterAndSearchMonsters() {
@@ -141,12 +146,11 @@
 
             const filteredMonsters = allMonsters.filter(monster => {
                 const nameMatch = monster.name.toLowerCase().includes(searchTerm);
-                const typeMatch = typeFilter === 'all' || monster.jenis === typeFilter;
+                const typeMatch = typeFilter === 'all' || monster.type === typeFilter;
                 return nameMatch && typeMatch;
             });
 
             displayMonsters(filteredMonsters);
-            setupAccordion();
         }
         
         document.getElementById('search-bar').addEventListener('input', filterAndSearchMonsters);
@@ -160,7 +164,7 @@
                     setTimeout(() => {
                         monsterElement.querySelector('summary').click();
                         monsterElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
+                    }, 150); // Small delay to ensure rendering
                 }
             }
         });
