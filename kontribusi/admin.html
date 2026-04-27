@@ -5,13 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Review - Adventure Diary</title>
     <link rel="stylesheet" href="../styles.css">
+    <style>
+        .contribution-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .contribution-actions {
+            margin-top: 10px;
+        }
+        .contribution-actions button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid transparent;
+        }
+        .contribution-actions button:first-of-type {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .contribution-actions button:last-of-type {
+            background-color: #e74c3c;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="contribution-form-container">
         <h2>Admin Review</h2>
         <div id="login-section">
-            <p>Please enter your GitHub Personal Access Token to continue.</p>
-            <input type="password" id="github-token" placeholder="Enter GitHub PAT">
+            <p>Please enter your Admin Token to continue.</p>
+            <input type="password" id="admin-token" placeholder="Enter Admin Token">
             <button onclick="login()">Login</button>
         </div>
 
@@ -22,34 +48,50 @@
     </div>
 
     <script>
-        const PROXY_URL = 'https://central-proxy-theta.vercel.app/api/contribute';
+        const BASE_URL = 'https://central-proxy.vercel.app'; // CORRECT BASE URL
 
+        // This function is called when the admin clicks the "Login" button.
         async function login() {
-            const token = document.getElementById('github-token').value;
+            const token = document.getElementById('admin-token').value;
             if (!token) {
                 alert('Please enter a token.');
                 return;
             }
 
-            // Store token and show review section
-            localStorage.setItem('github_pat', token);
+            // Store the token in localStorage for this session.
+            localStorage.setItem('admin_token', token);
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('review-section').style.display = 'block';
             loadContributions();
         }
 
+        // This function fetches the list of pending contributions from the backend proxy.
         async function loadContributions() {
-            const token = localStorage.getItem('github_pat');
+            const token = localStorage.getItem('admin_token');
             const listElement = document.getElementById('contributions-list');
             listElement.innerHTML = '<p>Loading...</p>';
 
+            if (!token) {
+                alert('Admin token not found. Please log in again.');
+                return;
+            }
+
             try {
-                const response = await fetch(PROXY_URL, {
+                // Fetch from the /api/list endpoint.
+                const response = await fetch(`${BASE_URL}/api/list`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     }
                 });
 
+                if (response.status === 401) {
+                     listElement.innerHTML = `<p>Authentication failed. Please check your Admin Token.</p>`;
+                     localStorage.removeItem('admin_token'); // Clear bad token
+                     document.getElementById('login-section').style.display = 'block';
+                     document.getElementById('review-section').style.display = 'none';
+                     return;
+                }
+                
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -69,54 +111,65 @@
             }
         }
 
+        // This function displays the fetched contributions on the page.
         function renderContributions(contributions) {
             const listElement = document.getElementById('contributions-list');
             listElement.innerHTML = ''; // Clear loading message
 
-            contributions.forEach((item, index) => {
+            contributions.forEach(item => {
+                // Assuming the proxy returns 'title', 'body', and 'number' for each issue.
                 const itemElement = document.createElement('div');
                 itemElement.className = 'contribution-item';
                 itemElement.innerHTML = `
-                    <h4>${item.name} (${item.type})</h4>
-                    <pre>${JSON.stringify(item.data, null, 2)}</pre>
+                    <h4>${item.title}</h4>
+                    <p>Issue #${item.number}</p>
+                    <pre>${item.body}</pre>
                     <div class="contribution-actions">
-                        <button onclick="handleAction('${index}', 'approve')">Approve</button>
-                        <button onclick="handleAction('${index}', 'reject')">Reject</button>
+                        <button onclick="handleAction(${item.number}, 'approve')">Approve</button>
+                        <button onclick="handleAction(${item.number}, 'reject')">Reject</button>
                     </div>
                 `;
                 listElement.appendChild(itemElement);
             });
         }
 
-        async function handleAction(index, action) {
-            const token = localStorage.getItem('github_pat');
+        // This function is called when an admin clicks "Approve" or "Reject".
+        async function handleAction(issueNumber, action) {
+            const token = localStorage.getItem('admin_token');
             const endpoint = action === 'approve' ? '/api/approve' : '/api/reject';
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Processing...';
 
             try {
-                const response = await fetch(`https://central-proxy-theta.vercel.app${endpoint}` , {
+                const response = await fetch(`${BASE_URL}${endpoint}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ index })
+                    // Send the unique issue number to the backend.
+                    body: JSON.stringify({ issue_number: issueNumber })
                 });
 
                 if (!response.ok) {
                     throw new Error(`Action failed: ${response.statusText}`);
                 }
 
-                alert(`Contribution ${action}ed successfully!`);
+                const result = await response.json();
+                alert(result.message || `Contribution ${action}ed successfully!`);
                 loadContributions(); // Refresh the list
 
             } catch (error) {
                 alert(`Error: ${error.message}`);
                 console.error('Action error:', error);
+                button.disabled = false;
+                button.textContent = action.charAt(0).toUpperCase() + action.slice(1);
             }
         }
 
-        // Check for token on page load
-        if (localStorage.getItem('github_pat')) {
+        // On page load, check if the user is already "logged in".
+        if (localStorage.getItem('admin_token')) {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('review-section').style.display = 'block';
             loadContributions();
