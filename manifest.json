@@ -1,18 +1,20 @@
 {
   "name": "Adventure Diary",
   "short_name": "AdvDiary",
-  "start_url": "/index.html",
+  "start_url": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#0a0a0a",
+  "scope": "/",
   "icons": [
     {
-      "src": "/img/logo.png",
+      "src": "img/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/img/logo.png",
+      "src": "img/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
