@@ -56,7 +56,8 @@
         <div id="notification" class="notification"></div>
 
         <div class="contribution-form-container">
-            <p>Terima kasih telah membantu mengembangkan Adventure Diary! Silakan pilih jenis data yang ingin Anda kirimkan.</p>
+            <h3>Terima kasih telah membantu mengembangkan <span class="highlight">Adventure Diary</span>!</h3>
+            <p>Silakan pilih jenis data yang ingin Anda kirimkan.</p>
             
             <div class="form-selector">
                 <button id="show-item-form" class="active">Item Baru</button>
@@ -65,7 +66,7 @@
 
             <!-- Formulir Item -->
             <form id="item-form" class="contribution-form">
-                <h3>Data Item Baru</h3>
+                <h4>Data Item Baru</h4>
                 <input type="text" name="name" placeholder="Nama Item" required>
                 <select name="type" required>
                     <option value="" disabled selected>Pilih Tipe Item</option>
@@ -114,7 +115,7 @@
 
             <!-- Formulir Monster -->
             <form id="monster-form" class="contribution-form" style="display: none;">
-                <h3>Data Monster Baru</h3>
+                <h4>Data Monster Baru</h4>
                 <input type="text" name="name" placeholder="Nama Monster" required>
                  <select name="type" required>
                     <option value="" disabled selected>Pilih Tipe Monster</option>
@@ -211,7 +212,7 @@
 
             const payload = {
                 type: type,
-                data: data
+                ...data // Spread the form data directly
             };
 
             try {

@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adventure Diary</title>
+    <title>Adventure Diary - Database Toram Online</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    <div id="overlay"></div>
     <nav id="sidebar">
         <div class="nav-header">
             <div class="logo-container">
                 <img src="img/logo.png" alt="Logo" class="logo-img">
                 <span class="logo-name">Adv' Diary</span>
             </div>
+            <button class="close-btn" onclick="toggleSidebar()">×</button>
         </div>
         <div class="nav-links">
-            <a href="./"><img src="img/icons/brand_ico.png"><span>Home</span></a>
+            <a href="./" class="home-link"><img src="img/icons/brand_ico.png"><span>Home</span></a>
             <a href="item/"><img src="img/icons/items_ico.png"><span>Items</span></a>
             <a href="monster/"><img src="img/icons/monsters_ico.png"><span>Monsters</span></a>
             <a href="skill/"><img src="img/icons/skills_ico.png"><span>Skills</span></a>
         </div>
         <div class="nav-links-footer">
-            <a href="kontribusi/"><img src="img/icons/quest_ico.png"><span>Kontribusi</span></a>
+             <a href="kontribusi/"><img src="img/icons/quest_ico.png"><span>Kontribusi</span></a>
         </div>
     </nav>
 
     <main>
         <div class="header-section">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <h2 class="main-title">ADVENTURE DIARY</h2>
+            <h1 class="main-title">Adventure Diary</h1>
             <div class="theme-switcher" onclick="toggleTheme()">
                 <div class="switcher-ball">
                     <span class="icon-day">☀️</span>
@@ -40,30 +40,35 @@
         </div>
 
         <div class="dashboard">
-            <p>Selamat datang di Adventure Diary, sumber terpercaya Anda untuk semua hal tentang Toram Online.</p>
-            <div class="card-group">
-                <div class="info-card">
-                    <h3>Database Item</h3>
-                    <p>Jelajahi database lengkap item, termasuk senjata, armor, dan material.</p>
-                    <a href="item/" class="card-link">Lihat Item</a>
-                </div>
-                <div class="info-card">
-                    <h3>Daftar Monster</h3>
-                    <p>Temukan informasi detail tentang semua monster, dari yang biasa hingga bos mini dan bos utama.</p>
-                    <a href="monster/" class="card-link">Lihat Monster</a>
-                </div>
+             <h2>Selamat datang di Adventure Diary</h2>
+             <p>Sumber terpercaya Anda untuk semua hal tentang <span class="highlight">Toram Online</span>.</p>
+             <div class="card-group">
                  <div class="info-card">
-                    <h3>Kontribusi</h3>
-                    <p>Punya data yang belum ada di sini? Bantu kami dengan mengirimkan informasi baru.</p>
-                    <a href="kontribusi/" class="card-link">Beri Kontribusi</a>
-                </div>
-            </div>
+                     <h3>Database Item</h3>
+                     <p>Jelajahi database lengkap item, termasuk senjata, armor, dan material.</p>
+                     <a href="item/" class="card-link">Lihat Item</a>
+                 </div>
+                 <div class="info-card">
+                     <h3>Daftar Monster</h3>
+                     <p>Temukan informasi detail tentang semua monster, dari yang biasa hingga bos mini dan bos utama.</p>
+                     <a href="monster/" class="card-link">Lihat Monster</a>
+                 </div>
+                  <div class="info-card">
+                     <h3>Kontribusi</h3>
+                     <p>Punya data yang belum ada di sini? Bantu kami dengan mengirimkan informasi baru.</p>
+                     <a href="kontribusi/" class="card-link">Beri Kontribusi</a>
+                 </div>
+             </div>
         </div>
     </main>
 
     <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
 
         function toggleTheme() {
@@ -74,20 +79,11 @@
             localStorage.setItem('theme', newTheme);
         }
 
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Set initial theme
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/adventure-diary/sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
     </script>
 </body>
 </html>
