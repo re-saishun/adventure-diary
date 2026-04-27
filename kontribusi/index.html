@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontribusi - Adventure Diary</title>
     <link rel="stylesheet" href="../styles.css">
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div id="overlay"></div>
@@ -163,31 +177,80 @@
 
         // Form submission handling
         const notification = document.getElementById('notification');
+        const PROXY_URL = 'https://central-proxy-theta.vercel.app/api/contribute';
 
-        function showNotification(message) {
+        function showNotification(message, isError = false) {
             notification.textContent = message;
+            notification.style.backgroundColor = isError ? '#e74c3c' : '#2ecc71'; // Red for error, Green for success
             notification.style.display = 'block';
             setTimeout(() => {
                 notification.style.display = 'none';
-            }, 5000); // Hide after 5 seconds
+            }, 5000);
+        }
+
+        async function submitContribution(form, type, submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // Clean up empty optional fields
+            for (const key in data) {
+                if (data[key] === '' || data[key] === null) {
+                    if(key !== 'name' && key !== 'type' && key !== 'credit') {
+                         delete data[key];
+                    }
+                }
+            }
+            
+            // Split comma-separated fields into arrays
+            if(data.stats) data.stats = data.stats.split(',').map(s => s.trim()).filter(s => s);
+            if(data.obtains) data.obtains = data.obtains.split(',').map(s => s.trim()).filter(s => s);
+            if(data.drops) data.drops = data.drops.split(',').map(s => s.trim()).filter(s => s);
+
+            const payload = {
+                type: type,
+                data: data
+            };
+
+            try {
+                const response = await fetch(PROXY_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred on the server.' }));
+                    throw new Error(errorData.message || 'Something went wrong');
+                }
+
+                const result = await response.json();
+                showNotification(`Kontribusi untuk "${data.name}" telah dikirimkan untuk ditinjau. Terima kasih, ${data.credit}!`);
+                form.reset();
+
+            } catch (error) {
+                console.error('Submission Error:', error);
+                showNotification(`Error: ${error.message}`, true);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = `Kirim ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            }
         }
 
         itemForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-            const message = `Kontribusi item "${data.name}" (${data.type}) dari ${data.credit} telah diterima! Terima kasih!`;
-            showNotification(message);
-            this.reset();
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitContribution(this, 'item', submitButton);
         });
 
         monsterForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-            const message = `Kontribusi monster "${data.name}" (Lv. ${data.level}) dari ${data.credit} telah diterima! Terima kasih!`;
-            showNotification(message);
-            this.reset();
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitContribution(this, 'monster', submitButton);
         });
 
     </script>

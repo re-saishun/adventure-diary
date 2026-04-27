@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Review - Adventure Diary</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="contribution-form-container">
+        <h2>Admin Review</h2>
+        <div id="login-section">
+            <p>Please enter your GitHub Personal Access Token to continue.</p>
+            <input type="password" id="github-token" placeholder="Enter GitHub PAT">
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="review-section" style="display: none;">
+            <h3>Pending Contributions</h3>
+            <div id="contributions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const PROXY_URL = 'https://central-proxy-theta.vercel.app/api/contribute';
+
+        async function login() {
+            const token = document.getElementById('github-token').value;
+            if (!token) {
+                alert('Please enter a token.');
+                return;
+            }
+
+            // Store token and show review section
+            localStorage.setItem('github_pat', token);
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('review-section').style.display = 'block';
+            loadContributions();
+        }
+
+        async function loadContributions() {
+            const token = localStorage.getItem('github_pat');
+            const listElement = document.getElementById('contributions-list');
+            listElement.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch(PROXY_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const contributions = await response.json();
+
+                if (contributions.length === 0) {
+                    listElement.innerHTML = '<p>No pending contributions.</p>';
+                    return;
+                }
+
+                renderContributions(contributions);
+
+            } catch (error) {
+                listElement.innerHTML = `<p>Error loading contributions: ${error.message}</p>`;
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function renderContributions(contributions) {
+            const listElement = document.getElementById('contributions-list');
+            listElement.innerHTML = ''; // Clear loading message
+
+            contributions.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'contribution-item';
+                itemElement.innerHTML = `
+                    <h4>${item.name} (${item.type})</h4>
+                    <pre>${JSON.stringify(item.data, null, 2)}</pre>
+                    <div class="contribution-actions">
+                        <button onclick="handleAction('${index}', 'approve')">Approve</button>
+                        <button onclick="handleAction('${index}', 'reject')">Reject</button>
+                    </div>
+                `;
+                listElement.appendChild(itemElement);
+            });
+        }
+
+        async function handleAction(index, action) {
+            const token = localStorage.getItem('github_pat');
+            const endpoint = action === 'approve' ? '/api/approve' : '/api/reject';
+
+            try {
+                const response = await fetch(`https://central-proxy-theta.vercel.app${endpoint}` , {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ index })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Action failed: ${response.statusText}`);
+                }
+
+                alert(`Contribution ${action}ed successfully!`);
+                loadContributions(); // Refresh the list
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+                console.error('Action error:', error);
+            }
+        }
+
+        // Check for token on page load
+        if (localStorage.getItem('github_pat')) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('review-section').style.display = 'block';
+            loadContributions();
+        }
+    </script>
+</body>
+</html>

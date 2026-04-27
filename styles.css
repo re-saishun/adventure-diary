@@ -234,34 +234,34 @@ nav.collapsed + main {
 @media (max-width: 768px) {
     nav {
         transform: translateX(-100%);
-        width: 250px; /* Wider nav for mobile */
+        width: 250px;
         height: 100vh;
         position: fixed;
+        overflow: hidden; /* Prevent the whole nav from scrolling */
     }
 
     nav.active {
         transform: translateX(0);
-        width: 250px; /* Match width */
+        width: 250px;
     }
 
-    /* Override collapsed styles for active mobile nav */
     nav.active.collapsed {
         width: 250px;
     }
 
     nav.active .logo-name,
     nav.active span {
-        display: block; /* Always show text in active mobile nav */
+        display: block;
         font-size: 1rem;
     }
     
     nav.active a {
-        justify-content: flex-start; /* Left-align content */
-        margin: 5px 10px; /* Adjust margin */
+        justify-content: flex-start;
+        margin: 5px 10px;
     }
 
     nav.active a img {
-        margin-right: 10px; /* Restore margin for icons */
+        margin-right: 10px;
     }
     
     nav.active .logo-img {
@@ -274,7 +274,7 @@ nav.collapsed + main {
     }
 
     .menu-btn {
-        display: block; /* Show hamburger menu on mobile */
+        display: block;
     }
 
     .close-btn {
