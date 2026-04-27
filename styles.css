@@ -234,10 +234,9 @@ nav.collapsed + main {
 @media (max-width: 768px) {
     nav {
         transform: translateX(-100%);
-        width: 250px;
+        width: 250px; 
         height: 100vh;
         position: fixed;
-        overflow: hidden; /* Prevent the whole nav from scrolling */
     }
 
     nav.active {
@@ -251,7 +250,7 @@ nav.collapsed + main {
 
     nav.active .logo-name,
     nav.active span {
-        display: block;
+        display: block; 
         font-size: 1rem;
     }
     
@@ -274,7 +273,7 @@ nav.collapsed + main {
     }
 
     .menu-btn {
-        display: block;
+        display: block; 
     }
 
     .close-btn {
