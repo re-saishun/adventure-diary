@@ -64,7 +64,7 @@
 
         async function loadItems() {
             try {
-                const response = await fetch('../data/items.json'); // Correct path to data
+                const response = await fetch('../database/items.json'); // Correct path to data
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const items = await response.json();
                 const itemList = document.getElementById('item-list');
